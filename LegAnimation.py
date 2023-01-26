@@ -34,10 +34,12 @@ def backward():
     print('Backward movement done')
 
 
-# s = socket.socket()
-# s.bind(('', PORT))
-# s.listen(1)
+# Socket establishing
+s = socket.socket()
+s.bind(('', PORT))
+s.listen(1)
 
+# Scene settings
 scene.width = SCENE_WIDTH
 scene.height = SCENE_HEIGHT
 scene.title = SCENE_TITLE
@@ -45,28 +47,26 @@ x_hat = arrow(pos=vector(200, 0, 0), axis=vector(200,0,0), color=color.green)
 y_hat = arrow(pos=vector(200, 0, 0), axis=vector(0,200,0), color=color.red)
 z_hat = arrow(pos=vector(200, 0, 0), axis=vector(0,0,200), color=color.blue)
 instructions = text(text="X - green\n Y - red\n Z - blue", pos=vector(-300, 0, 0), axis=vec(1, 0, 0), color=color.white, height=20)
+
+# Main connection loop
 while True:
-    # foot.rotate(angle=0.001, axis=vec(0, 1, 0))
-    # conn, addr = s.accept()
-    forward()
-    sleep(2)
-    backward()
-    sleep(2)
-    # print(f'Connection established: {addr}')
-    # read = conn.makefile('r')
-    # write = conn.makefile('w')
-    # with conn, read, write:
-    #     while True:
-    #         data = read.readline()
-    #         if not data:
-    #             print(f'Stream message has been closed: {addr}')
-    #             conn.close()
-    #             break
-    #         cmd = data.strip()
-    #         print(f'Receive command: {cmd}')
-    #         if cmd == 'f':
-    #             forward()
-    #         elif cmd == 'b':
-    #             backward()
+    conn, addr = s.accept()
+    print(f'Connection established: {addr}')
+    read = conn.makefile('r')
+    write = conn.makefile('w')
+    with conn, read, write:
+        # Messages processing loop
+        while True:
+            data = read.readline()
+            if not data:
+                print(f'Stream message has been closed: {addr}')
+                conn.close()
+                break
+            cmd = data.strip()
+            print(f'Receive command: {cmd}')
+            if cmd == 'f':
+                forward()
+            elif cmd == 'b':
+                backward()
 
 
